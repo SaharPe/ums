@@ -3,15 +3,16 @@
     <v-container fluid fill-height>
       <v-layout justify-center>
         <v-flex xs10 md6 lg4>
-
+          
           <!-- login card START -->
           <v-card class="text-center mt-10" elevation="8">
             <v-toolbar color="primary">
               <v-toolbar-title class="white--text"
-                >User Management System</v-toolbar-title>
+                >User Management System</v-toolbar-title
+              >
             </v-toolbar>
             <v-card-text>
-              <v-form v-model="isValid" @submit.prevent>
+              <v-form v-model="isValid" @submit.prevent="login">
                 <v-text-field
                   outlined
                   label="username"
@@ -22,10 +23,12 @@
                 ></v-text-field>
                 <v-btn
                   :disabled="!isValid"
+                  :loading="isLoading"
                   @click="login"
                   color="primary"
                   class="white--text"
-                  >Login</v-btn>
+                  >Login</v-btn
+                >
               </v-form>
             </v-card-text>
           </v-card>
@@ -48,11 +51,13 @@ export default {
       (v) => (v && v.length <= 10) || "Username must be less than 10 chars",
     ],
     isValid: false,
+    isLoading: false,
     userInput: null,
   }),
   methods: {
     async login() {
       try {
+        this.isLoading = true;
         const url = "http://localhost:5000/api/users";
         const user = { username: this.userInput };
         const { data } = await axios.post(url, user);
@@ -61,8 +66,11 @@ export default {
           query: { CurrentStatus: data.status, UniqueID: data._id },
         });
       } catch (err) {
+        alert('Login failed');
         console.log(err.response);
       }
+
+      this.isLoading = false;
     },
   },
 };

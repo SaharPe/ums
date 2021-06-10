@@ -3,7 +3,6 @@
     <v-container fluid fill-height>
       <v-layout justify-center>
         <v-flex xs8 md4 lg4>
-
           <!-- info messages START -->
           <div class="messages">
             <h1>
@@ -84,7 +83,8 @@
               </v-list-item>
             </v-list>
             <v-card-subtitle v-else class="error--text"
-              >No results..</v-card-subtitle>
+              >No results..</v-card-subtitle
+            >
           </v-card>
           <!-- user list END -->
 
@@ -92,12 +92,11 @@
           <v-btn
             class="logout"
             color="error lighten-1 mt-4"
-            xsmall
             block
             @click="$router.push('/login')"
-            >Logout</v-btn>
+            >Logout</v-btn
+          >
           <!-- logout button END -->
-
         </v-flex>
       </v-layout>
     </v-container>
@@ -128,7 +127,9 @@ export default {
             user.status === this.searchStatus
           );
         } else {
-          return user.username.includes(this.searchText);
+          return user.username
+            .toLowerCase()
+            .includes(this.searchText.toLowerCase());
         }
       });
     },
@@ -147,36 +148,44 @@ export default {
 
         await this.getUsers();
       } catch (err) {
+        alert("Could not update status");
         console.log(err.response);
       }
     },
-    async getUser() {
+    async getCurrentUser() {
       try {
         const url = `http://localhost:5000/api/users/${this.connectedUser._id}`;
         const { data } = await axios.get(url);
         this.connectedUser.username = data.username;
         this.connectedUser.status = data.status;
       } catch (err) {
+        alert("Could not find the user you are looking for");
+        this.$router.push("Login");
         console.log(err.response);
       }
     },
     async getUsers() {
       try {
+        this.isLoading = false;
         const url = `http://localhost:5000/api/users`;
         const { data } = await axios.get(url);
-        this.isLoading = false;
         this.users = data;
       } catch (err) {
+        alert("Could not load the users list");
         console.log(err.response);
       }
+
+      this.isLoading = false;
     },
   },
   async created() {
     try {
       this.connectedUser._id = this.$route.query.UniqueID;
-      await this.getUser();
+      await this.getCurrentUser();
       await this.getUsers();
     } catch (err) {
+      alert("Something went wrong, please try to login again");
+      this.$router.push("Login");
       console.log(err.response);
     }
   },
