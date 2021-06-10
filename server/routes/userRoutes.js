@@ -4,9 +4,6 @@ const User = require('../models/User');
 // Create user
 router.post('/', async (req, res) => {
     try {
-        // Check if user is already registered, if so return it
-        // const existingUser = await User.findOne({ username: req.body.username });
-
         const existingUser = await User.findOne({ username: { $regex: `^${req.body.username}$`, $options: 'i' } });
         if (existingUser) return res.json(existingUser);
 
